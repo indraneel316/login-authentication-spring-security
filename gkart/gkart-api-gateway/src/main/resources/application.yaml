@@ -1,0 +1,39 @@
+server:
+  port: 9999
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+spring:
+  application:
+    name: gkart-api-gateway
+  security:
+    user:
+      name: admin
+      password: passw0rd
+  cloud:
+    gateway:
+      discovery:
+        locator: true
+      routes:
+        - id: user_service_route
+          uri: lb://GKART-USER-SERVICE
+          predicates:
+            - Path=/gkart/user-service/**
+        - id: dummy_service
+          uri: lb://gkart-user-service
+          predicates:
+            - Path=/gkart/user-service/dummy
+          filters:
+            - name: JwtValidationFilter
+
+jwt:
+  secret: gKart-JWT-secret-passw0rd#2023
+
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
